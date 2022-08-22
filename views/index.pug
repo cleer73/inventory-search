@@ -1,0 +1,53 @@
+extends layout
+
+block content
+  table
+    tr
+      td(valign='top' class='character-list')
+        h2 Update Inventory
+        form(method='POST')
+          label Character:
+          br
+          input(type='text' name='character')
+          br
+          label Inventory:
+          br
+          textarea(name='inventory')
+          br
+          input(type='submit')
+
+        if characters.length > 0
+          h2 Characters
+
+          table(class='data')
+            tr
+              th Name
+              th Items
+              th Actions
+            each row in characters
+              tr
+                td= row.name
+                td= row.items
+                td
+                  a(href=`/character/delete/${row.name}`) delete
+      td(valign='top' class='item-list')
+        h2 Inventory
+
+        if inventory.length > 0
+          form
+            label Filter:
+            input(type='text' name='q' value=`${query}`)
+            input(type='submit')
+
+          table(class='data')
+            tr
+              th Character
+              th Qty
+              th Item
+            each item in inventory
+              tr
+                td= item.name
+                td= item.qty
+                td= item.item
+        else
+          p(class='warning') No character inventory in database.
