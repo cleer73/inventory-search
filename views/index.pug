@@ -10,11 +10,13 @@ block content
           br
           input(type='text' name='character')
           br
+          br
           label Inventory:
           br
           textarea(name='inventory')
           br
-          input(type='submit')
+          br
+          input(type='submit' value='Replace')
 
         if characters.length > 0
           h2 Characters
@@ -30,14 +32,16 @@ block content
                 td= row.items
                 td
                   a(href=`/character/delete/${row.name}`) delete
+
       td(valign='top' class='item-list')
         h2 Inventory
 
         if inventory.length > 0
           form
-            label Filter:
-            input(type='text' name='q' value=`${query}`)
-            input(type='submit')
+            p
+              input(type='text' name='q' value=`${query}`)
+              |  
+              input(type='submit' value='Filter')
 
           table(class='data')
             tr
