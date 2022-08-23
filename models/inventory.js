@@ -1,51 +1,33 @@
-const sqlite3 = require('sqlite3');
-const db = new sqlite3.Database(`${__dirname}/../data.sqlite`)
-
-function init() {
-	db.serialize(() => {
-		db.run('CREATE TABLE IF NOT EXISTS inventory (name TEXT, item TEXT)')
-	})
+async function init(adb) {
+	await adb.run('CREATE TABLE IF NOT EXISTS inventory (name TEXT, item TEXT)')
 }
 
-function update(characterName, inventory, cb) {
-	db.serialize(() => {
-		db.run(`DELETE FROM inventory WHERE name = '${characterName}'`);
+async function update(db, characterName, inventory) {
+	await db.run(`DELETE FROM inventory WHERE name = '${characterName}'`);
 
-		var insertStmt = db.prepare('INSERT INTO inventory VALUES(?, ?)');
-		for(const item of inventory) {
-			if (!item) continue;
-			insertStmt.run(characterName, item)
-		}
-		insertStmt.finalize();
-
-		cb();
-	})
+	var insertStmt = await db.prepare('INSERT INTO inventory VALUES(?, ?)');
+	for(const item of inventory) {
+		if (!item) continue;
+		await insertStmt.run(characterName, item)
+	}
+	await insertStmt.finalize();
 }
 
-function readAll(cb) {
-	db.serialize(() => {
-		db.all('SELECT name, item, COUNT(item) AS qty FROM inventory GROUP BY name, item', cb)
-	})
+async function readAll(db) {
+	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory GROUP BY name, item')
 }
 
-function readFiltered(filter, cb) {
-	db.serialize(() => {
-		db.all('SELECT name, item, COUNT(item) AS qty FROM inventory WHERE item LIKE "%' + filter + '%" GROUP BY name, item', cb)
-	})
+async function readFiltered(db, filter) {
+	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory WHERE item LIKE "%' + filter + '%" GROUP BY name, item')
 }
 
-function readCharacters(cb) {
-	db.serialize(() => {
-		db.all('SELECT name, COUNT(*) AS items FROM inventory GROUP BY name', cb);
-	})
+async function readCharacters(db) {
+	return await db.all('SELECT name, COUNT(*) AS items FROM inventory GROUP BY name');
 }
 
-function deleteCharacter(characterName, cb) {
-	db.serialize(() => {
-		db.run(`DELETE FROM inventory WHERE name = '${characterName}'`, cb);
-	});
+async function deleteCharacter(db, characterName) {
+	return await db.run(`DELETE FROM inventory WHERE name = '${characterName}'`);
 }
-
 
 module.exports = {
 	init,

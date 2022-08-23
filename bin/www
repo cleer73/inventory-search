@@ -8,12 +8,17 @@ var app = require('../app');
 var debug = require('debug')('inventory-search:server');
 var http = require('http');
 var inventoryModel = require('../models/inventory');
+var connectionModel = require('../models/connection');
 
 /**
- * Initialize the database
+ * Initialize the database & connection
  */
 
-inventoryModel.init()
+(async () => {
+  var db = await connectionModel.openDb()
+  app.set('db', db)
+  inventoryModel.init(db)
+})()
 
 /**
  * Get port from environment and store in Express.

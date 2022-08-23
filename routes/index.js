@@ -3,35 +3,30 @@ var inventoryModel = require('../models/inventory.js')
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  inventoryModel.readCharacters((err, names) => {
-    console.log(req.query.q)
-    if (req.query.q) {
-      inventoryModel.readFiltered(req.query.q, (err, inventory) => {
-        res.render('index', {
-          title: 'Express',
-          characters: names,
-          inventory,
-          query: req.query.q
-        });
-      })
-    } else {
-      inventoryModel.readAll((err, inventory) => {
-        res.render('index', {
-          title: 'Express',
-          characters: names,
-          inventory,
-          query: '',
-        });
-      })
-    }
+router.get('/', async (req, res, next) => {
+  var db = req.app.get('db')
+  var query = req.query.q || '';
+
+  var names = await inventoryModel.readCharacters(db);
+  var inventory = query
+    ? await inventoryModel.readFiltered(db, query)
+    : await inventoryModel.readAll(db)
+
+  res.render('index', {
+    title: 'Inventory Manager',
+    characters: names,
+    inventory,
+    query: query
   });
 });
 
-router.post('/', function(req, res, next) {
-
-  var parseInvRow = /^(a|an|some) (.*)/i;
+router.post('/', async (req, res, next) => {
+  var db = req.app.get('db')
+  var characterName = req.body.character
   var rows = req.body.inventory.split('\r\n');
+
+  // Strip a | an | some from the start of all inventory items
+  var parseInvRow = /^(a|an|some) (.*)/i;
   rows = rows.map((row) => {
     if (!row) return;
 
@@ -40,17 +35,15 @@ router.post('/', function(req, res, next) {
     return item;
   })
 
-  // res.send('<pre>' + JSON.stringify(rows, undefined, '  ') + '</pre>');
+  await inventoryModel.update(db, characterName, rows);
 
-  inventoryModel.update(req.body.character, rows, () => {
-    res.redirect('/')
-  });
+  res.redirect('/')
 });
 
-router.get('/character/delete/:name', (req, res, next) => {
-  inventoryModel.deleteCharacter(req.params.name, () => {
-    res.redirect('/');
-  })
+router.get('/character/delete/:name', async (req, res, next) => {
+  var db = req.app.get('db')
+  await inventoryModel.deleteCharacter(db, req.params.name)
+  res.redirect('/');
 })
 
 module.exports = router;
