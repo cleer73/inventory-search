@@ -35,7 +35,7 @@ table.data {
 
 table.data td,
 table.data th {
-  padding:  1em 0.5em;
+  padding: 0.5em 1em;
   border-bottom: 1px solid #666;
   text-align:  left;
 }
