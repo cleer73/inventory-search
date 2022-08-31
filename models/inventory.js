@@ -13,6 +13,10 @@ async function update(db, characterName, inventory) {
 	await insertStmt.finalize();
 }
 
+async function readCount(db) {
+	return await db.get('SELECT COUNT(*) totalItems FROM inventory');
+}
+
 async function readAll(db) {
 	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory GROUP BY name, item');
 }
@@ -36,4 +40,5 @@ module.exports = {
 	deleteCharacter,
 	readFiltered,
 	readCharacters,
+	readCount,
 }

@@ -8,6 +8,7 @@ router.get('/', async (req, res, next) => {
   var query = req.query.q || '';
 
   var characters = await inventoryModel.readCharacters(db);
+  var {totalItems} = await inventoryModel.readCount(db);
   var inventory = query
     ? await inventoryModel.readFiltered(db, query)
     : await inventoryModel.readAll(db)
@@ -16,6 +17,7 @@ router.get('/', async (req, res, next) => {
     title: 'Inventory Manager',
     characters,
     inventory,
+    totalItems,
     query
   });
 });
