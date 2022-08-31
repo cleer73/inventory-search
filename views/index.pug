@@ -43,6 +43,9 @@ block content
               |  
               input(type='submit' value='Filter')
 
+          if query !== ''
+            p #{inventory.length} items found.
+
           table(class='data')
             tr
               th Character
