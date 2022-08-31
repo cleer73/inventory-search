@@ -14,11 +14,11 @@ async function update(db, characterName, inventory) {
 }
 
 async function readAll(db) {
-	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory GROUP BY name, item')
+	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory GROUP BY name, item');
 }
 
 async function readFiltered(db, filter) {
-	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory WHERE item LIKE "%' + filter + '%" GROUP BY name, item')
+	return await db.all('SELECT name, item, COUNT(item) AS qty FROM inventory WHERE item LIKE "%' + filter + '%" GROUP BY name, item');
 }
 
 async function readCharacters(db) {
