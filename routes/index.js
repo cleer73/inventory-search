@@ -7,16 +7,16 @@ router.get('/', async (req, res, next) => {
   var db = req.app.get('db')
   var query = req.query.q || '';
 
-  var names = await inventoryModel.readCharacters(db);
+  var characters = await inventoryModel.readCharacters(db);
   var inventory = query
     ? await inventoryModel.readFiltered(db, query)
     : await inventoryModel.readAll(db)
 
   res.render('index', {
     title: 'Inventory Manager',
-    characters: names,
+    characters,
     inventory,
-    query: query
+    query
   });
 });
 
