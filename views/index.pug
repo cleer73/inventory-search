@@ -46,7 +46,7 @@ block content
               input(type='submit' value='Filter')
 
           if query !== ''
-            p #{inventory.length} items found.
+            p #{inventory.length} results, on #{inventoryStats.characters} unique characters, with a total quantity of #{inventoryStats.items} items.
 
           table(class='data')
             tr
