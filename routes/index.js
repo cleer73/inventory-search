@@ -1,5 +1,7 @@
 var express = require('express');
 var inventoryModel = require('../models/inventory.js')
+var _ = require('lodash');
+
 var router = express.Router();
 
 /* GET home page. */
@@ -13,12 +15,24 @@ router.get('/', async (req, res, next) => {
     ? await inventoryModel.readFiltered(db, query)
     : await inventoryModel.readAll(db)
 
+  // Calculate some basic stats on inventory returned.
+  var inventoryStats = {
+    characters: characters.length,
+    items: totalItems,
+  }
+
+  if (query !== '') {
+    inventoryStats.characters = _.uniq(_.map(inventory, 'name')).length;
+    inventoryStats.items = _.sum(_.map(inventory, 'qty'));
+  } 
+
   res.render('index', {
     title: 'Inventory Manager',
     characters,
     inventory,
+    inventoryStats,
     totalItems,
-    query
+    query,
   });
 });
 
